@@ -21,4 +21,14 @@ class DocumentRetriever:
             distances.sort(key=lambda x: x[1])  
             for rank in distances[:n]:
                 result.append(rank[0])
-        return result        
+        return result
+    
+    def doc_topics(self, doc_idx, sorted=True):
+        topics = []
+        i = 0;
+        for topic in self.matrix[doc_idx]:
+            topics.append([i,topic])
+            i+=1
+        topics.sort(key=lambda x: x[1], reverse=True)
+        return topics
+        

@@ -9,12 +9,12 @@ class LdaMalletHandler:
     def __init__(self, mallet_path):
         self.mallet_path = mallet_path
 
-    def run_model(self, model_name, corpus, num_topics, workers=8, iterations=1000):
+    def run_model(self, model_name, corpus, **kwargs):
         self.model_name = model_name
         self.dictionary = Dictionary(corpus)
         corpus_bow = [self.dictionary.doc2bow(text) for text in corpus]
         os.makedirs("models/"+model_name, exist_ok=True )
-        self.model = LdaMallet(self.mallet_path, corpus_bow, num_topics=num_topics,id2word=self.dictionary, workers=workers, prefix="./models/"+model_name+"/", iterations=iterations)
+        self.model = LdaMallet(self.mallet_path, corpus_bow, id2word=self.dictionary, prefix="./models/"+model_name+"/", **kwargs)
 
     def save_model(self, corpus_path=None):
         if(corpus_path!=None):
@@ -34,7 +34,12 @@ class LdaMalletHandler:
         args = file.read().splitlines()
         file.close()
         self.corpus_path=args[0]
-            
+    
+    def doc_topics(self, doc_idx):
+        if(not hasattr(self, 'doc_retriever')):
+            self.doc_retriever =  DocumentRetriever(self.model.fdoctopics())
+        return self.doc_retriever.doc_topics(doc_idx)    
+    
     def ext_doc_topics(self, ext_doc):
         doc_bow = self.dictionary.doc2bow(ext_doc)
         doc_topics = self.model[doc_bow]
