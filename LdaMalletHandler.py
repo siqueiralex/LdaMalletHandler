@@ -45,24 +45,23 @@ class LdaMalletHandler:
         self.model_name = model_name
         self.dictionary = Dictionary(corpus)
         corpus_bow = [self.dictionary.doc2bow(text) for text in corpus]
-        os.makedirs("models/"+model_name, exist_ok=True )
-        self.model = LdaMallet(self.mallet_path, corpus_bow, id2word=self.dictionary, prefix="./models/"+model_name+"/", **kwargs)
+        os.makedirs("ldamodels/"+model_name, exist_ok=True )
+        self.model = LdaMallet(self.mallet_path, corpus_bow, id2word=self.dictionary, prefix="./ldamodels/"+model_name+"/", **kwargs)
 
-    def save_model(self, corpus_path=None):
-        if(corpus_path!=None):
-            file = open("models/"+self.model_name+"/info.info", "w")
-            file.write(corpus_path+'\n')
-            file.close()
-        self.model.save("models/"+self.model_name+"/model.model")
-        self.dictionary.save("models/"+self.model_name+"/dict.dict")
+    def save_model(self, corpus_path):        
+        file = open("ldamodels/"+self.model_name+"/info.info", "w")
+        file.write(corpus_path+'\n')
+        file.close()
+        self.model.save("ldamodels/"+self.model_name+"/model.model")
+        self.dictionary.save("ldamodels/"+self.model_name+"/dict.dict")
 
     def load_model(self, model_name):
         self.model_name = model_name
-        self.dictionary  = corpora.Dictionary.load("models/"+self.model_name+"/dict.dict")
-        self.model = LdaMallet.load("models/"+self.model_name+"/model.model")
+        self.dictionary  = corpora.Dictionary.load("ldamodels/"+self.model_name+"/dict.dict")
+        self.model = LdaMallet.load("ldamodels/"+self.model_name+"/model.model")
         self.model.mallet_path = self.mallet_path
         
-        file = open("models/"+self.model_name+"/info.info", "r")
+        file = open("ldamodels/"+self.model_name+"/info.info", "r")
         args = file.read().splitlines()
         file.close()
         self.corpus_path=args[0]
